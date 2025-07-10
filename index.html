@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white flex flex-col items-center justify-center min-h-screen font-sans">
+
+    <div class="w-full max-w-2xl p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-black">Todo List</h1>
+        </header>
+
+        <div class="bg-orange-100 p-6 rounded-lg">
+            <main>
+                <form id="task-form" class="flex justify-between items-center mb-4">
+                    <div class="flex gap-2 w-full">
+                        <input id="task-input" type="text" placeholder="Add a new task" class="border border-gray-400 rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                        <input id="date-input" type="date" class="border border-gray-400 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    </div>
+                    <button type="submit" class="bg-blue-500 text-white font-bold w-12 h-10 flex items-center justify-center rounded ml-4 hover:bg-blue-600 text-2xl">
+                        +
+                    </button>
+                </form>
+
+                <section class="flex justify-between items-center mb-6">
+                    <div class="flex gap-2">
+                        <button id="show-completed-btn" class="bg-slate-200 py-2 px-4 rounded hover:bg-slate-300 text-sm">Show Completed</button>
+                        <button id="show-all-btn" class="bg-green-300 py-2 px-4 rounded hover:bg-green-400 text-sm">Show All</button>
+                    </div>
+                    <button id="delete-all-btn" class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 text-sm">Delete All</button>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-semibold text-center mb-4">Tasks</h2>
+                    <div id="task-list" class="text-center">
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <footer class="absolute bottom-4 text-center w-full">
+        <span class="text-gray-600">&copy; 2025. All rights reserved.</span>
+    </footer>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
