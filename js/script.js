@@ -8,9 +8,25 @@ const sortSelect = document.getElementById('sort-select');
 const notification = document.getElementById('notification');
 const messageEl = document.getElementById('notification-message');
 
+// --- ELEMEN MODAL ---
+const confirmModal = document.getElementById('confirm-modal');
+const confirmModalBox = confirmModal.querySelector('div');
+const confirmModalTitle = confirmModal.querySelector('h3');
+const confirmModalMessage = confirmModal.querySelector('p');
+const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+
+const alertModal = document.getElementById('alert-modal');
+const alertModalBox = alertModal.querySelector('div');
+const alertMessage = document.getElementById('alert-message');
+const alertOkBtn = document.getElementById('alert-ok-btn');
+
+
 let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 let currentFilter = 'all';
 let currentSort = 'dueDate';
+// Variabel untuk menyimpan sementara tugas yang akan dihapus
+let taskToDelete = null; 
 
 const updateAndRender = () => {
     localStorage.setItem('tasks', JSON.stringify(tasks));
@@ -62,9 +78,15 @@ const createTaskElement = (task) => {
     deleteBtn.className = 'delete-btn text-red-500 hover:text-red-400 transition-colors duration-300 ml-4';
     deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
     deleteBtn.setAttribute('aria-label', `Hapus tugas: ${task.task}`);
+    // --- PERUBAHAN DI SINI ---
     deleteBtn.addEventListener('click', () => {
-        tasks = tasks.filter(t => t.createdAt !== task.createdAt);
-        updateAndRender();
+        // Simpan tugas yang akan dihapus
+        taskToDelete = task;
+        // Ubah teks modal untuk konfirmasi hapus satuan
+        confirmModalTitle.textContent = 'Hapus Tugas Ini?';
+        confirmModalMessage.textContent = `Apakah Anda yakin ingin menghapus tugas "${task.task}"?`;
+        // Tampilkan modal
+        showConfirmModal();
     });
 
     div.append(leftSide, deleteBtn);
@@ -103,6 +125,35 @@ const displayTasks = () => {
     }
 };
 
+// --- FUNGSI UNTUK MODAL ---
+const showConfirmModal = () => {
+    confirmModal.classList.remove('hidden');
+    setTimeout(() => confirmModalBox.classList.remove('scale-95'), 10); 
+};
+
+const hideConfirmModal = () => {
+    confirmModalBox.classList.add('scale-95');
+    setTimeout(() => {
+        confirmModal.classList.add('hidden');
+        // Reset variabel saat modal ditutup
+        taskToDelete = null;
+    }, 300);
+};
+
+const showAlertModal = (msg) => {
+    alertMessage.textContent = msg;
+    alertModal.classList.remove('hidden');
+    setTimeout(() => alertModalBox.classList.remove('scale-95'), 10);
+};
+
+const hideAlertModal = () => {
+    alertModalBox.classList.add('scale-95');
+    setTimeout(() => alertModal.classList.add('hidden'), 300);
+};
+
+
+// --- EVENT LISTENERS ---
+
 addTaskBtn.addEventListener('click', () => {
     const text = taskInput.value.trim();
     const date = dueDateInput.value;
@@ -128,13 +179,48 @@ taskInput.addEventListener('keypress', (e) => {
 
 deleteAllBtn.addEventListener('click', () => {
     if (tasks.length === 0) {
-        return showNotification('Tidak ada tugas untuk dihapus.');
+        return showAlertModal('Tidak ada tugas untuk dihapus.');
     }
-    if (confirm('Apakah Anda yakin ingin menghapus semua tugas?')) {
+    // --- PERUBAHAN DI SINI ---
+    // Pastikan taskToDelete null untuk operasi hapus semua
+    taskToDelete = null;
+    // Ubah teks modal untuk konfirmasi hapus semua
+    confirmModalTitle.textContent = 'Apakah Anda Yakin?';
+    confirmModalMessage.textContent = 'Tindakan ini akan menghapus semua tugas secara permanen dan tidak dapat dibatalkan.';
+    showConfirmModal();
+});
+
+// --- EVENT LISTENERS UNTUK MODAL ---
+cancelDeleteBtn.addEventListener('click', hideConfirmModal);
+
+// --- PERUBAHAN DI SINI ---
+confirmDeleteBtn.addEventListener('click', () => {
+    // Cek apakah ini operasi hapus satuan atau hapus semua
+    if (taskToDelete) {
+        // Hapus satu tugas
+        tasks = tasks.filter(t => t.createdAt !== taskToDelete.createdAt);
+    } else {
+        // Hapus semua tugas
         tasks = [];
-        updateAndRender();
+    }
+    updateAndRender();
+    hideConfirmModal();
+});
+
+confirmModal.addEventListener('click', (e) => {
+    if (e.target === confirmModal) {
+        hideConfirmModal();
     }
 });
+
+alertOkBtn.addEventListener('click', hideAlertModal);
+
+alertModal.addEventListener('click', (e) => {
+    if (e.target === alertModal) {
+        hideAlertModal();
+    }
+});
+
 
 filterButtons.addEventListener('click', (e) => {
     const btn = e.target.closest('button.filter-btn');

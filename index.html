@@ -31,19 +31,29 @@
       height: 100vh;
       pointer-events: none;
     }
-    body > *:not(#bg-canvas) {
+    .bg-custom {
+      background: linear-gradient(to bottom right, #08316e, #20497c, #581c87);
+    }
+    /* === PERUBAHAN DI SINI === */
+    /* Membuat aturan lebih spesifik agar tidak mengganggu modal */
+    #main-container {
       position: relative;
       z-index: 10;
     }
-    .bg-custom {
-      background: linear-gradient(to bottom right, #08316e, #20497c, #581c87);
+    /* === GAYA UNTUK MODAL KUSTOM === */
+    #confirm-modal, #alert-modal {
+      transition: opacity 0.3s ease-in-out;
+    }
+    #confirm-modal > div, #alert-modal > div {
+       transition: transform 0.3s ease-in-out;
     }
   </style>
 </head>
 <body class="bg-custom min-h-screen text-white">
   <canvas id="bg-canvas"></canvas>
 
-  <div class="container mx-auto max-w-2xl p-6">
+  <!-- === PERUBAHAN DI SINI: Menambahkan id="main-container" === -->
+  <div id="main-container" class="container mx-auto max-w-2xl p-6">
     <div class="text-center mb-10">
       <h1 class="text-4xl sm:text-5xl font-extrabold text-yellow-400 drop-shadow-sm pixel-font">📝 To-Do List 📝</h1>
       <p class="text-purple-100 mt-2">Atur tugas harianmu dengan to-do list.</p>
@@ -89,6 +99,29 @@
 
     <p class="text-center text-xs text-purple-300 mt-8">2025 Akbar. All rights reserved.</p>
   </div>
+  
+  <!-- === STRUKTUR MODAL KONFIRMASI === -->
+  <div id="confirm-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+    <div class="bg-purple-950 border border-purple-700 rounded-2xl p-6 sm:p-8 shadow-2xl text-center max-w-sm mx-auto transform scale-95">
+        <h3 class="text-xl sm:text-2xl font-bold text-yellow-400 mb-4">Apakah Anda Yakin?</h3>
+        <p class="text-purple-200 mb-8">Tindakan ini akan menghapus semua tugas secara permanen dan tidak dapat dibatalkan.</p>
+        <div class="flex justify-center gap-4">
+            <button id="cancel-delete-btn" class="px-6 py-2 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg transition-colors">Batal</button>
+            <button id="confirm-delete-btn" class="px-6 py-2 bg-red-600 hover:bg-red-500 text-white font-semibold rounded-lg transition-colors">Ya, Hapus</button>
+        </div>
+    </div>
+  </div>
+
+  <!-- === STRUKTUR MODAL ALERT === -->
+  <div id="alert-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+    <div class="bg-purple-950 border border-purple-700 rounded-2xl p-6 sm:p-8 shadow-2xl text-center max-w-sm mx-auto transform scale-95">
+        <h3 id="alert-message" class="text-xl sm:text-2xl text-purple-200 mb-8"></h3>
+        <div class="flex justify-center">
+            <button id="alert-ok-btn" class="px-8 py-2 bg-yellow-400 hover:bg-yellow-300 text-purple-900 font-semibold rounded-lg transition-colors">OK</button>
+        </div>
+    </div>
+  </div>
+
 
   <script src="js/script.js" defer></script>
   <script>
