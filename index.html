@@ -38,6 +38,18 @@
     .bg-custom {
       background: linear-gradient(to bottom right, #08316e, #20497c, #581c87);
     }
+    
+    /* === PERUBAHAN DI SINI === */
+    /* Tampilkan placeholder kustom saat input tanggal kosong */
+    #due-date-input:invalid::before {
+      content: attr(data-placeholder);
+      color: #9ca3af; /* Warna abu-abu seperti placeholder */
+      width: 100%;
+    }
+    /* Sembunyikan ikon kalender default saat placeholder kustom ditampilkan */
+    #due-date-input:invalid::-webkit-calendar-picker-indicator {
+      display: none;
+    }
   </style>
 </head>
 <body class="bg-custom min-h-screen text-white">
@@ -56,7 +68,10 @@
     <div class="bg-white/10 backdrop-blur-md p-6 rounded-2xl shadow-xl mb-8 border border-purple-300">
       <div class="space-y-4">
         <input id="task-input" type="text" placeholder="Tugas baru..." class="w-full px-4 py-3 border border-purple-400 rounded-lg bg-purple-950 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
-        <input id="due-date-input" type="datetime-local" class="w-full px-4 py-3 border border-purple-400 rounded-lg bg-purple-950 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
+        
+        <!-- === PERUBAHAN DI SINI === -->
+        <input id="due-date-input" type="datetime-local" data-placeholder="Pilih tanggal & waktu..." required class="w-full px-4 py-3 border border-purple-400 rounded-lg bg-purple-950 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
+        
         <button id="add-task-btn" class="w-full bg-yellow-400 text-purple-900 font-semibold py-3 rounded-lg hover:bg-yellow-300 transition-transform transform hover:scale-105">
           <i class="fas fa-plus mr-2"></i>Tambah Tugas
         </button>
@@ -147,3 +162,11 @@
   </script>
 </body>
 </html>
+```
+
+### Ringkasan Perubahan:
+
+1.  **CSS:** Menambahkan aturan CSS untuk menampilkan teks dari `data-placeholder` saat input tanggal kosong.
+2.  **HTML:** Menambahkan atribut `data-placeholder="Pilih tanggal & waktu..."` dan `required` ke input tanggal Anda. Atribut `required` membantu selector CSS `:invalid` bekerja dengan andal.
+
+Sekarang, input tanggal Anda akan memiliki tampilan placeholder yang konsisten baik di desktop maupun di 
