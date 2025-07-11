@@ -1,148 +1,92 @@
-const taskForm = document.getElementById('task-form');
 const taskInput = document.getElementById('task-input');
-const dateInput = document.getElementById('date-input');
-const taskList = document.getElementById('task-list');
-const showCompletedBtn = document.getElementById('show-completed-btn');
-const showAllBtn = document.getElementById('show-all-btn');
+const dueDateInput = document.getElementById('due-date-input');
+const addTaskBtn = document.getElementById('add-task-btn');
+const taskListEl = document.getElementById('task-list');
 const deleteAllBtn = document.getElementById('delete-all-btn');
+const filterButtons = document.getElementById('filter-buttons');
+const notification = document.getElementById('notification');
+const messageEl = document.getElementById('notification-message');
 
 let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 let currentFilter = 'all';
 
+function showNotification(msg) {
+  messageEl.textContent = msg;
+  notification.classList.add('show');
+  setTimeout(() => notification.classList.remove('show'), 3000);
+}
+
 function saveTasks() {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
+  localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
-function renderTasks() {
-    taskList.innerHTML = '';
+function displayTasks() {
+  taskListEl.innerHTML = '';
+  const filtered = tasks.filter(t => {
+    if (currentFilter === 'active') return !t.completed;
+    if (currentFilter === 'completed') return t.completed;
+    return true;
+  });
 
-    const filteredTasks = tasks.filter(task => {
-        if (currentFilter === 'completed') {
-            return task.completed;
-        }
-        return true;
-    });
+  if (filtered.length === 0) {
+    taskListEl.innerHTML = '<p class="text-center text-gray-500">Tidak ada tugas ditemukan.</p>';
+    return;
+  }
 
-    if (filteredTasks.length === 0) {
-        taskList.innerHTML = `<p class="text-center text-gray-500">Task is Empty!</p>`;
-        return;
-    }
-
-    filteredTasks.forEach(task => {
-        const taskElement = document.createElement('div');
-        taskElement.className = 'flex justify-between items-center py-3 border-b border-gray-300';
-        
-        const taskInfo = document.createElement('div');
-        taskInfo.className = 'flex-grow pr-4';
-        taskInfo.style.cursor = 'pointer';
-        taskInfo.dataset.id = task.id;
-        taskInfo.dataset.action = 'toggle';
-
-        const titleElement = document.createElement('p');
-        titleElement.className = 'font-semibold';
-        titleElement.textContent = task.title;
-
-        if (task.completed) {
-            titleElement.classList.add('line-through', 'text-gray-400');
-        }
-        
-        taskInfo.appendChild(titleElement);
-
-        if (task.dueDate) {
-            const dateElement = document.createElement('p');
-            dateElement.className = 'text-sm text-gray-600';
-            dateElement.textContent = task.dueDate;
-            if (task.completed) {
-                dateElement.classList.add('line-through', 'text-gray-400');
-            }
-            taskInfo.appendChild(dateElement);
-        }
-
-        const deleteButton = document.createElement('button');
-        deleteButton.dataset.id = task.id;
-        deleteButton.dataset.action = 'delete';
-        deleteButton.className = 'bg-red-500 text-white text-sm py-1 px-3 rounded hover:bg-red-600';
-        deleteButton.textContent = 'Delete';
-
-        taskElement.appendChild(taskInfo);
-        taskElement.appendChild(deleteButton);
-        taskList.appendChild(taskElement);
-    });
-}
-
-function addTask(event) {
-    event.preventDefault();
-
-    const taskTitle = taskInput.value.trim();
-    if (taskTitle === '') {
-        alert('Task title cannot be empty!');
-        return;
-    }
-
-    const newTask = {
-        id: Date.now(),
-        title: taskTitle,
-        dueDate: dateInput.value,
-        completed: false
+  filtered.forEach(task => {
+    const div = document.createElement('div');
+    div.className = `task-item ${task.completed ? 'completed' : ''} flex justify-between items-center border-b pb-2`;
+    div.innerHTML = `
+      <div class="flex items-center space-x-3">
+        <button class="toggle-btn text-xl ${task.completed ? 'text-green-500' : 'text-gray-400'}">
+          <i class="fas ${task.completed ? 'fa-check-circle' : 'fa-circle'}"></i>
+        </button>
+        <div>
+          <span class="font-medium">${task.task}</span><br>
+          <span class="text-sm text-gray-500">${new Date(task.dueDate).toLocaleDateString('id-ID')}</span>
+        </div>
+      </div>
+      <button class="delete-btn text-red-500"><i class="fas fa-trash"></i></button>
+    `;
+    div.querySelector('.toggle-btn').onclick = () => {
+      task.completed = !task.completed;
+      saveTasks();
+      displayTasks();
     };
-
-    tasks.push(newTask);
-    taskInput.value = '';
-    dateInput.value = '';
-    saveTasks();
-    renderTasks();
+    div.querySelector('.delete-btn').onclick = () => {
+      tasks = tasks.filter(t => t !== task);
+      saveTasks();
+      displayTasks();
+    };
+    taskListEl.appendChild(div);
+  });
 }
 
-function handleTaskListClick(event) {
-    const target = event.target.closest('[data-action]');
+addTaskBtn.onclick = () => {
+  const text = taskInput.value.trim();
+  const date = dueDateInput.value;
+  if (!text || !date) return showNotification('Isi tugas dan tanggal!');
+  tasks.unshift({ task: text, dueDate: date, completed: false });
+  saveTasks();
+  displayTasks();
+  taskInput.value = '';
+  dueDateInput.value = '';
+};
 
-    if (!target) return;
+deleteAllBtn.onclick = () => {
+  if (!confirm('Hapus semua tugas?')) return;
+  tasks = [];
+  saveTasks();
+  displayTasks();
+};
 
-    const action = target.dataset.action;
-    const taskId = target.dataset.id;
+filterButtons.onclick = e => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('bg-white', 'text-blue-600'));
+  btn.classList.add('bg-white', 'text-blue-600');
+  currentFilter = btn.dataset.filter;
+  displayTasks();
+};
 
-    if (action === 'toggle') {
-        const task = tasks.find(t => t.id == taskId);
-        if (task) {
-            task.completed = !task.completed;
-        }
-    } else if (action === 'delete') {
-        tasks = tasks.filter(t => t.id != taskId);
-    }
-
-    saveTasks();
-    renderTasks();
-}
-
-if (taskForm) {
-    taskForm.addEventListener('submit', addTask);
-}
-if (taskList) {
-    taskList.addEventListener('click', handleTaskListClick);
-}
-if (showAllBtn) {
-    showAllBtn.addEventListener('click', () => {
-        currentFilter = 'all';
-        renderTasks();
-    });
-}
-if (showCompletedBtn) {
-    showCompletedBtn.addEventListener('click', () => {
-        currentFilter = 'completed';
-        renderTasks();
-    });
-}
-if (deleteAllBtn) {
-    deleteAllBtn.addEventListener('click', () => {
-        if (confirm('Are you sure you want to delete all tasks?')) {
-            tasks = [];
-            saveTasks();
-            renderTasks();
-        }
-    });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    renderTasks();
-    console.log("JavaScript is running from script.js!");
-});
+displayTasks();

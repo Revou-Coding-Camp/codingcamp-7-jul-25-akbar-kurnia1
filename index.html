@@ -1,52 +1,140 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo List</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>To-Do List</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .task-item.completed span:first-child {
+      text-decoration: line-through;
+      color: #9ca3af;
+    }
+    #notification {
+      transition: 0.5s ease-in-out;
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    #notification.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+    }
+    body > *:not(#bg-canvas) {
+      position: relative;
+      z-index: 10;
+    }
+    .bg-custom {
+      background: linear-gradient(to bottom right, #08316e, #20497c, #581c87);
+    }
+  </style>
 </head>
-<body class="bg-white flex flex-col items-center justify-center min-h-screen font-sans">
+<body class="bg-custom min-h-screen text-white">
+  <canvas id="bg-canvas"></canvas>
 
-    <div class="w-full max-w-2xl p-8">
-        <header class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-black">Todo List</h1>
-        </header>
-
-        <div class="bg-orange-100 p-6 rounded-lg">
-            <main>
-                <form id="task-form" class="flex justify-between items-center mb-4">
-                    <div class="flex gap-2 w-full">
-                        <input id="task-input" type="text" placeholder="Add a new task" class="border border-gray-400 rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400" required>
-                        <input id="date-input" type="date" class="border border-gray-400 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
-                    </div>
-                    <button type="submit" class="bg-blue-500 text-white font-bold w-12 h-10 flex items-center justify-center rounded ml-4 hover:bg-blue-600 text-2xl">
-                        +
-                    </button>
-                </form>
-
-                <section class="flex justify-between items-center mb-6">
-                    <div class="flex gap-2">
-                        <button id="show-completed-btn" class="bg-slate-200 py-2 px-4 rounded hover:bg-slate-300 text-sm">Show Completed</button>
-                        <button id="show-all-btn" class="bg-green-300 py-2 px-4 rounded hover:bg-green-400 text-sm">Show All</button>
-                    </div>
-                    <button id="delete-all-btn" class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 text-sm">Delete All</button>
-                </section>
-
-                <section>
-                    <h2 class="text-xl font-semibold text-center mb-4">Tasks</h2>
-                    <div id="task-list" class="text-center">
-                    </div>
-                </section>
-            </main>
-        </div>
+  <div class="container mx-auto max-w-2xl p-6">
+    <div class="text-center mb-10">
+      <h1 class="text-5xl font-extrabold text-yellow-400 drop-shadow-sm pixel-font">📝 To-Do List 📝</h1>
+      <p class="text-purple-100 mt-2">Atur tugas harianmu dengan to-do list.</p>
     </div>
 
-    <footer class="absolute bottom-4 text-center w-full">
-        <span class="text-gray-600">&copy; 2025. All rights reserved.</span>
-    </footer>
+    <div id="notification" class="fixed top-5 right-5 bg-red-500 text-white py-2 px-4 rounded-lg shadow-lg z-50">
+      <p id="notification-message"></p>
+    </div>
 
-    <script src="script.js"></script>
+    <div class="bg-white/10 backdrop-blur-md p-6 rounded-2xl shadow-xl mb-8 border border-purple-300">
+      <div class="space-y-4">
+        <input id="task-input" type="text" placeholder="Tugas baru..." class="w-full px-4 py-3 border border-purple-400 rounded-lg bg-purple-950 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
+        <input id="due-date-input" type="date" class="w-full px-4 py-3 border border-purple-400 rounded-lg bg-purple-950 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
+        <button id="add-task-btn" class="w-full bg-yellow-400 text-purple-900 font-semibold py-3 rounded-lg hover:bg-yellow-300 transition-transform transform hover:scale-105">
+          <i class="fas fa-plus mr-2"></i>Tambah Tugas
+        </button>
+      </div>
+    </div>
 
+    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+      <div id="filter-buttons" class="flex bg-purple-900 shadow-inner rounded-lg overflow-hidden divide-x divide-purple-700">
+        <button data-filter="all" class="filter-btn px-4 py-2 text-yellow-400 font-semibold bg-purple-800">Semua</button>
+        <button data-filter="active" class="filter-btn px-4 py-2 text-white hover:bg-purple-700">Aktif</button>
+        <button data-filter="completed" class="filter-btn px-4 py-2 text-white hover:bg-purple-700">Selesai</button>
+      </div>
+      <button id="delete-all-btn" class="bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 shadow-md">
+        <i class="fas fa-trash"></i> Hapus Semua
+      </button>
+    </div>
+
+    <div id="task-list" class="bg-white/10 backdrop-blur-sm rounded-2xl shadow-lg p-4 space-y-3 min-h-[150px] border border-purple-300">
+      <!-- Tugas akan ditampilkan di sini -->
+    </div>
+
+    <p class="text-center text-xs text-purple-300 mt-8">2025 Akbar. All rights reserved.</p>
+  </div>
+
+  <script src="js/script.js" defer></script>
+  <script>
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let w, h, stars;
+
+    function initStars() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+      stars = Array.from({ length: 50 }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 1.5 + 1,
+        speed: Math.random() * 0.4 + 0.2,
+        angle: Math.random() * 360,
+        rotationSpeed: Math.random() * 2 + 1
+      }));
+    }
+
+    function drawStars() {
+      ctx.clearRect(0, 0, w, h);
+      for (let star of stars) {
+        ctx.save();
+        ctx.translate(star.x, star.y);
+        ctx.rotate((Math.PI / 180) * star.angle);
+        ctx.fillStyle = 'rgba(255, 215, 0, 0.8)';
+        drawStar(ctx, 0, 0, 5, star.r * 2, star.r);
+        ctx.restore();
+
+        star.y += star.speed;
+        star.angle += star.rotationSpeed;
+        if (star.y > h + 5) {
+          star.y = -10;
+          star.x = Math.random() * w;
+        }
+      }
+      requestAnimationFrame(drawStars);
+    }
+
+    function drawStar(ctx, x, y, points, outerRadius, innerRadius) {
+      let angle = Math.PI / points;
+      ctx.beginPath();
+      for (let i = 0; i < 2 * points; i++) {
+        const r = (i % 2 === 0) ? outerRadius : innerRadius;
+        const a = i * angle;
+        ctx.lineTo(x + r * Math.cos(a), y + r * Math.sin(a));
+      }
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    window.addEventListener('resize', initStars);
+    initStars();
+    drawStars();
+  </script>
 </body>
 </html>
