@@ -30,7 +30,18 @@ Hey there! Here's a to-do list app I put together. It was a mini-project for my 
 - JavaScript (ES6+)
 - Font Awesome for the icons
 
-## 📂 Getting Started
+## 📂 Project Structure
+
+The file structure for this project is straightforward:
+
+
+.
+├── index.html
+└── js/
+└── script.js
+
+
+## 🚀 Getting Started
 
 Want to run this on your own machine? It's pretty easy! Just follow these steps:
 
@@ -51,4 +62,4 @@ A huge thank you to everyone at **RevoU Coding Camp**! To all the instructors an
 
 ---
 
-Coded by **Akbar Kurnia**
+Coded by **Akbar-Kurnia1**
