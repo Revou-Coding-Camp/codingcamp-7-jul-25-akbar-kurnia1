@@ -31,12 +31,12 @@ Hey there! Here's a to-do list app I put together. It was a mini-project for my 
 - Font Awesome for the icons
 
 ## 📂 Project Structure
-
+```
 .
 ├── index.html
 └── js/
 └── script.js
-
+```
 **Note:** This project separates its JavaScript into the `js/` folder, which is a recommended practice. Custom CSS is placed inside `<style>` tags in `index.html` for simplicity, and Tailwind CSS is loaded from a CDN.
 
 ## 🚀 Getting Started
