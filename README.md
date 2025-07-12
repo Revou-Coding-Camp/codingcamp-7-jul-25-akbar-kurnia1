@@ -35,7 +35,7 @@ Hey there! Here's a to-do list app I put together. It was a mini-project for my 
 .
 ├── index.html
 └── js/
-    └── script.js
+└── script.js
 
 **Note:** This project separates its JavaScript into the `js/` folder, which is a recommended practice. Custom CSS is placed inside `<style>` tags in `index.html` for simplicity, and Tailwind CSS is loaded from a CDN.
 
@@ -60,4 +60,4 @@ A huge thank you to everyone at **RevoU Coding Camp**! To all the instructors an
 
 ---
 
-Coded by **Akbar Kurnia**
+Coded by **Akbar-Kurnia1**
