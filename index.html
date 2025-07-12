@@ -34,13 +34,12 @@
     .bg-custom {
       background: linear-gradient(to bottom right, #08316e, #20497c, #581c87);
     }
-    /* === PERUBAHAN DI SINI === */
-    /* Membuat aturan lebih spesifik agar tidak mengganggu modal */
+
     #main-container {
       position: relative;
       z-index: 10;
     }
-    /* === GAYA UNTUK MODAL KUSTOM === */
+
     #confirm-modal, #alert-modal {
       transition: opacity 0.3s ease-in-out;
     }
@@ -51,8 +50,7 @@
 </head>
 <body class="bg-custom min-h-screen text-white">
   <canvas id="bg-canvas"></canvas>
-
-  <!-- === PERUBAHAN DI SINI: Menambahkan id="main-container" === -->
+  
   <div id="main-container" class="container mx-auto max-w-2xl p-6">
     <div class="text-center mb-10">
       <h1 class="text-4xl sm:text-5xl font-extrabold text-yellow-400 drop-shadow-sm pixel-font">📝 To-Do List 📝</h1>
@@ -94,13 +92,12 @@
     </div>
 
     <div id="task-list" class="bg-white/10 backdrop-blur-sm rounded-2xl shadow-lg p-4 space-y-3 min-h-[150px] border border-purple-300">
-      <!-- Tugas akan ditampilkan di sini -->
+  
     </div>
 
     <p class="text-center text-xs text-purple-300 mt-8">2025 Akbar-Kurnia1. All rights reserved.</p>
   </div>
   
-  <!-- === STRUKTUR MODAL KONFIRMASI === -->
   <div id="confirm-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
     <div class="bg-purple-950 border border-purple-700 rounded-2xl p-6 sm:p-8 shadow-2xl text-center max-w-sm mx-auto transform scale-95">
         <h3 class="text-xl sm:text-2xl font-bold text-yellow-400 mb-4">Apakah Anda Yakin?</h3>
@@ -112,7 +109,6 @@
     </div>
   </div>
 
-  <!-- === STRUKTUR MODAL ALERT === -->
   <div id="alert-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
     <div class="bg-purple-950 border border-purple-700 rounded-2xl p-6 sm:p-8 shadow-2xl text-center max-w-sm mx-auto transform scale-95">
         <h3 id="alert-message" class="text-xl sm:text-2xl text-purple-200 mb-8"></h3>
