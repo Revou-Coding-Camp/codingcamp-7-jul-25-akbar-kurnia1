@@ -54,7 +54,7 @@ Want to run this on your own machine? It's pretty easy! Just follow these steps:
 3.  **Open the main file**
     Just open `index.html` in Chrome or your favorite browser. That's it!
 
-## Acknowledgements
+## ⭐ Acknowledgements
 
 A huge thank you to everyone at **RevoU Coding Camp**! To all the instructors and mentors, you all are awesome. Thanks so much for the help.
 
